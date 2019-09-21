@@ -40,8 +40,8 @@
 004000190919     D info            DS                  LikeDs(dbdqlib_dqinfo_T)
 004100190821
 004200140720      /free
-004300190919       info = dbdqlib_getdqinfo('MLBNETTST':'JOE');
-004400190917       data = dbdqlib_readdq('MLBNETTST':'JOE':0:'');
+004300190921       info = dbdqlib_getdqinfo('TESTDQ':'JOE');
+004400190921       data = dbdqlib_readdq('TESTDQ':'JOE':0:'');
 004500140720      /end-free
 004600190821
 004700190821     P                 E
@@ -53,7 +53,7 @@
 005300190920
 005400190920      /free
 005500190920       exec sql
-005600190920        set :data = ixpertoss.dtaq_read('MLBNETTST', 'JOE', 0, '');
+005600190921        set :data = ixpertoss.dtaq_read('TESTDQ', 'JOE', 0, '');
 005700190920      /end-free
 005800190920
 005900190920     P                 E
