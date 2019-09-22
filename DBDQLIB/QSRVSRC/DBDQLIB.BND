@@ -3,5 +3,6 @@
 000300190917             EXPORT     SYMBOL(dbdqlib_readdq)
 000400190919             EXPORT     SYMBOL(dbdqlib_getdqinfo)
 000500190920             EXPORT     SYMBOL(dbdqlib_getdqinfo_udtf)
-000600190609
-000700140613             ENDPGMEXP
+000600190922             EXPORT     SYMBOL(dbdqlib_senddq)
+000700190609
+000800140613             ENDPGMEXP
