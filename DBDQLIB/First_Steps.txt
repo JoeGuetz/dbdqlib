@@ -1,0 +1,34 @@
+
+Download the source code and save everything in LIB IXPERTOSS
+Make IXPERTOSS the current library (CHGCURLIB IXPERTOSS)
+
+Create module DBDQLIB into library IXPERTOSS
+-> SEU Option 15
+
+Create service program DBDQLIB from module 
+-> CRTSRVPGM SRVPGM(IXPERTOSS/DBDQLIB) MODULE(IXPERTOSS/DBDQLIB) SRCFILE(IXPERTOSS/QSRVSRC)
+
+Create the SQL functions
+-> RUNSQLSTM SRCFILE(IXPERTOSS/QSQLSRC) SRCMBR(DTAQ_READ) COMMIT(*NONE) NAMING(*SQL)                                                                   
+-> RUNSQLSTM SRCFILE(IXPERTOSS/QSQLSRC) SRCMBR(DTAQ_SEND) COMMIT(*NONE) NAMING(*SQL)
+-> RUNSQLSTM SRCFILE(IXPERTOSS/QSQLSRC) SRCMBR(DTAQ_UDTF) COMMIT(*NONE) NAMING(*SQL)
+
+For testing create a data queue in IXPERTOSS Lib:
+CRTDTAQ DTAQ(IXPERTOSS/TEST) MAXLEN(100) TEXT('DTAQ Test SQL Functions')
+
+SQL for retrieving the data queue attributes:
+select *                                                     
+from table(ixpertoss.dtaq_getinfo('TEST', 'IXPERTOSS')) as t 
+
+SQL for inserting data into the data queue
+select ixpertoss.dtaq_send('TEST', 'IXPERTOSS', 'data2send', '')
+from sysibm.sysdummy1
+
+SQL for retrieving data from the data queue
+select ixpertoss.dtaq_read('TEST', 'IXPERTOSS', -1, '')
+from sysibm.sysdummy1                                                                             
+
+The 4th parameter on dtaq_send and dtaq_read is a key-value. Please note that reading a keyed data queue is not implemented yet.
+The 3rd parameter on dtaq_read defines the wait time. Please refer to IBM documentation regarding the values.
+
+So far, so good - have fun playing around!
