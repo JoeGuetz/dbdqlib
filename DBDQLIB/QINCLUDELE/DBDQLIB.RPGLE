@@ -36,16 +36,17 @@
 003600190917     D dtaqLibn                      10    Varying Const
 003700190917     D waitTime                       5  0 Const
 003800190917     D keyValue                     256    Varying Const
-003900190830
-004000190922     D dbdqlib_senddq...
-004100190922     D                 PR             1    Varying
-004200190922     D dtaqName                      10    Varying Const
-004300190922     D dtaqLibn                      10    Varying Const
-004400190922     D dtaqData                   32704    Varying Const
-004500190922     D dtaqKey                      256    Varying Const
-004600190922
-004700190919     D dbdqlib_getdqinfo...
-004800190919     D                 PR                  LikeDs(dbdqlib_dqinfo_T)
-004900190919     D dtaqName                      10    Varying Const
-005000190919     D dtaqLibn                      10    Varying Const
-005100190919
+003900190924     D keyOrder                       2    Varying Const
+004000190830
+004100190922     D dbdqlib_senddq...
+004200190922     D                 PR             1    Varying
+004300190922     D dtaqName                      10    Varying Const
+004400190922     D dtaqLibn                      10    Varying Const
+004500190922     D dtaqData                   32704    Varying Const
+004600190922     D dtaqKey                      256    Varying Const
+004700190922
+004800190919     D dbdqlib_getdqinfo...
+004900190919     D                 PR                  LikeDs(dbdqlib_dqinfo_T)
+005000190919     D dtaqName                      10    Varying Const
+005100190919     D dtaqLibn                      10    Varying Const
+005200190919
