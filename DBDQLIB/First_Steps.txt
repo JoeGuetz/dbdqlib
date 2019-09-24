@@ -15,12 +15,19 @@ Create module DBDQLIB into library IXPERTOSS
 Create the service program DBDQLIB from the module 
 -> CRTSRVPGM SRVPGM(IXPERTOSS/DBDQLIB) MODULE(IXPERTOSS/DBDQLIB) EXPORT(*SRCFILE) SRCFILE(IXPERTOSS/QSRVSRC)
 
+Create a binding directory that will also be used for future projects
+-> CRTBNDDIR IXPERTOSS/IXPERTBND
+
+Add the service program DBDQLIB to the BNDDIR
+-> ADDBNDDIRE BNDDIR(IXPERTOSS/IXPERTBND) OBJ((IXPERTOSS/DBDQLIB *SRVPGM)) 
+
 Create the SQL functions from the scripts in QSQLSRC
 -> RUNSQLSTM SRCFILE(IXPERTOSS/QSQLSRC) SRCMBR(DTAQ_READ) COMMIT(*NONE) NAMING(*SQL)                                                                   
 -> RUNSQLSTM SRCFILE(IXPERTOSS/QSQLSRC) SRCMBR(DTAQ_SEND) COMMIT(*NONE) NAMING(*SQL)
 -> RUNSQLSTM SRCFILE(IXPERTOSS/QSQLSRC) SRCMBR(DTAQ_UDTF) COMMIT(*NONE) NAMING(*SQL)
 
-For testing create a data queue in IXPERTOSS Lib:
+Testing the service
+Create a data queue in IXPERTOSS Lib:
 CRTDTAQ DTAQ(IXPERTOSS/TEST) MAXLEN(100) TEXT('DTAQ Test SQL Functions')
 
 SQL for retrieving the data queue attributes:
@@ -35,13 +42,14 @@ SQL for retrieving data from the data queue
 select ixpertoss.dtaq_read('TEST', 'IXPERTOSS', -1, '')
 from sysibm.sysdummy1                                                                             
 
-The 1st and 2nd parameter on all functions is DTAQ-Name and DTAQ-Library. If library is empty, *LIBL will be internally set.
+The 1st and 2nd parameter on all functions holds the DTAQ-Name and DTAQ-Library. If library is empty, *LIBL will be internally set.
 DTAQ_READ:
 The 3rd parameter defines the wait time. Please refer to IBM documentation regarding the values.
-The 4th parameter is a key value. Pass a zero-length-string(!) for reading unkeyed. Currently reading keyed is not implemented yet, but will follow next.
+The 4th parameter is a key value. Pass a zero-length-string(!) for reading unkeyed.
 DTAQ_SEND:
 The 3rd parameter is the data_to_send.
-The 4th parameter is a key-value. Pass a zero-length-string(!) for no key. Keyed sending is implemented, but not tested!
+The 4th parameter is a key-value. Pass a zero-length-string(!) for no key.
 
+Everything has been tested rudimentary. You may make changes and enhancements according to your requirements.
 
-So far, so good - have fun playing around!
+Happy coding!
