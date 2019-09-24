@@ -221,156 +221,162 @@
 022100190919     D retVal          DS                  LikeDs(dbdqlib_dqinfo_T)
 022200190919
 022300190919      /free
-022400190919       dqname = dtaqName;
-022500190919       dqlibn = dtaqLibn;
-022600190919       infdq = dqname + dqlibn;
-022700190919       infformat = 'RDQD0100';
-022800190919       inflen = %size(retVal);
-022900190919
-023000190919       clear retVal;
-023100190920       monitor;
-023200190920         getdqinfo(retVal:inflen:infformat:infdq);
-023300190920       on-error;
-023400190920       endmon;
-023500190919       return retVal;
-023600190919      /end-free
-023700190919
-023800190919     P                 E
-023900190920      ****************************************************************
-024000190924      * Get DTAQ Info Export SQL Table Function
-024100190920      ****************************************************************
-024200190920     P dbdqlib_getdqinfo_udtf...
-024300190920     P                 B                   Export
-024400190920     D dbdqlib_getdqinfo_udtf...
-024500190920     D                 PI
-024600190920     D  i_dtaqName                   10    Varying Const
-024700190920     D  i_dtaqLibn                   10    Varying Const
-024800190920     D  o_msgLength                  10I 0
-024900190920     D  o_keyLength                  10I 0
-025000190920     D  o_keySeq                      1    Varying
-025100190920     D  o_inclSender                  1    Varying
-025200190920     D  o_forceInd                    1    Varying
-025300190920     D  o_description                50    Varying
-025400190920     D  o_type                        1    Varying
-025500190920     D  o_autoReclaim                 1    Varying
-025600190920     D  o_enfrcLocks                  1    Varying
-025700190920     D  o_msgInQ                     10I 0
-025800190920     D  o_msgAlloc                   10I 0
-025900190920     D  o_dqName                     10    Varying
-026000190920     D  o_dqLibn                     10    Varying
-026100190920     D  o_maxEntAlw                  10I 0
-026200190920     D  o_initEnt                    10I 0
-026300190920     D  o_maxEntSpec                 10    Varying
-026400190920     D  o_lastRclmDat                 8    Varying
-026500190920     D  n_dtaqName                    5I 0 Const
-026600190920     D  n_dtaqLibn                    5I 0 Const
-026700190920     D  n_msgLength                   5I 0 Const
-026800190920     D  n_keyLength                   5I 0 Const
-026900190920     D  n_keySeq                      5I 0 Const
-027000190920     D  n_inclSender                  5I 0 Const
-027100190920     D  n_forceInd                    5I 0 Const
-027200190920     D  n_description                 5I 0 Const
-027300190920     D  n_type                        5I 0 Const
-027400190920     D  n_autoReclaim                 5I 0 Const
-027500190920     D  n_enfrcLocks                  5I 0 Const
-027600190920     D  n_msgInQ                      5I 0 Const
-027700190920     D  n_msgAlloc                    5I 0 Const
-027800190920     D  n_dqName                      5I 0 Const
-027900190920     D  n_dqLibn                      5I 0 Const
-028000190920     D  n_maxEntAlw                   5I 0 Const
-028100190920     D  n_initEnt                     5I 0 Const
-028200190920     D  n_maxEntSpec                  5I 0 Const
-028300190920     D  n_lastRclmDat                 5I 0 Const
-028400190920     D  SQLSTT                        5A
-028500190920     D  function                    517A   Varying Const
-028600190920     D  specific                    128A   Varying Const
-028700190920     D  errorMsg                     70A   Varying
-028800190920     D  callType                     10I 0 Const
-028900190920
-029000190920     D data            DS                  Static LikeDs(dbdqlib_dqinfo_T)
-029100190920     D dataRead        S               N   Static
-029200190920
-029300190920      /free
-029400190920       SQLSTT = '00000';
-029500190920       select;
-029600190920       when callType = udtf_call_open;
-029700190920         exsr doOpen;
-029800190920       when callType = udtf_call_fetch;
-029900190920         exsr doFetch;
-030000190920       when callType = udtf_call_close;
-030100190920         exsr doClose;
-030200190920       other;
-030300190920       endsl;
-030400190920       return;
-030500190920
-030600190920       begsr doOpen;
-030700190920       clear data;
-030800190920       if n_dtaqName = udtf_parm_null;
-030900190920         SQLSTT = '38999';
-031000190920         leavesr;
-031100190920       endif;
-031200190920       if n_dtaqLibn = udtf_parm_null;
-031300190920         SQLSTT = '38999';
-031400190920         leavesr;
-031500190920       endif;
-031600190920       data = dbdqlib_getdqinfo(i_dtaqName:i_dtaqLibn);
-031700190920       dataRead = false;
-031800190920       if data.bytesReturned = 0;
-031900190920         dataRead = true;
-032000190920       endif;
-032100190920       endsr;
-032200190920
-032300190920       begsr doFetch;
-032400190920       if dataRead;
-032500190920         SQLSTT = '02000';
-032600190920         leavesr;
-032700190920       endif;
-032800190920       o_msgLength = data.msgLength;
-032900190920       o_keyLength = data.keyLength;
-033000190920       o_keySeq = data.keySequence;
-033100190920       o_inclSender = data.inclSender;
-033200190920       o_forceInd = data.forceInd;
-033300190920       o_description = data.description;
-033400190920       o_type = data.type;
-033500190920       o_autoReclaim = data.autoReclaim;
-033600190920       o_enfrcLocks = data.enfrcDQLocks;
-033700190920       o_msgInQ = data.numMsgsInQ;
-033800190920       o_msgAlloc = data.numMsgsAlloc;
-033900190920       o_dqName = data.name;
-034000190920       o_dqLibn = data.library;
-034100190920       o_maxEntAlw = data.maxEntriesAlw;
-034200190920       o_initEnt = data.initEntries;
-034300190920       if data.maxEntriesSpc = -1;
-034400190920         o_maxEntSpec = '*MAX16MB';
-034500190920       elseif data.maxEntriesSpc = -2;
-034600190920         o_maxEntSpec = '*MAX2GB';
-034700190920       else;
-034800190920         o_maxEntSpec = '';
-034900190920       endif;
-035000190920       o_lastRclmDat = data.lastReclmDate;
-035100190920       dataRead = true;
-035200190920       endsr;
-035300190920
-035400190920       begsr doClose;
-035500190920       clear data;
-035600190920       endsr;
-035700190920
-035800190920      /end-free
+022400190924       if g_smartcase;
+022500190924         dqname = toUpper(dtaqName);
+022600190924         dqlibn = toUpper(dtaqLibn);
+022700190924       else;
+022800190924         dqname = dtaqName;
+022900190924         dqlibn = dtaqLibn;
+023000190924       endif;
+023100190924
+023200190919       infdq = dqname + dqlibn;
+023300190919       infformat = 'RDQD0100';
+023400190919       inflen = %size(retVal);
+023500190919
+023600190919       clear retVal;
+023700190920       monitor;
+023800190920         getdqinfo(retVal:inflen:infformat:infdq);
+023900190920       on-error;
+024000190920       endmon;
+024100190919       return retVal;
+024200190919      /end-free
+024300190919
+024400190919     P                 E
+024500190920      ****************************************************************
+024600190924      * Get DTAQ Info Export SQL Table Function
+024700190920      ****************************************************************
+024800190920     P dbdqlib_getdqinfo_udtf...
+024900190920     P                 B                   Export
+025000190920     D dbdqlib_getdqinfo_udtf...
+025100190920     D                 PI
+025200190920     D  i_dtaqName                   10    Varying Const
+025300190920     D  i_dtaqLibn                   10    Varying Const
+025400190920     D  o_msgLength                  10I 0
+025500190920     D  o_keyLength                  10I 0
+025600190920     D  o_keySeq                      1    Varying
+025700190920     D  o_inclSender                  1    Varying
+025800190920     D  o_forceInd                    1    Varying
+025900190920     D  o_description                50    Varying
+026000190920     D  o_type                        1    Varying
+026100190920     D  o_autoReclaim                 1    Varying
+026200190920     D  o_enfrcLocks                  1    Varying
+026300190920     D  o_msgInQ                     10I 0
+026400190920     D  o_msgAlloc                   10I 0
+026500190920     D  o_dqName                     10    Varying
+026600190920     D  o_dqLibn                     10    Varying
+026700190920     D  o_maxEntAlw                  10I 0
+026800190920     D  o_initEnt                    10I 0
+026900190920     D  o_maxEntSpec                 10    Varying
+027000190920     D  o_lastRclmDat                 8    Varying
+027100190920     D  n_dtaqName                    5I 0 Const
+027200190920     D  n_dtaqLibn                    5I 0 Const
+027300190920     D  n_msgLength                   5I 0 Const
+027400190920     D  n_keyLength                   5I 0 Const
+027500190920     D  n_keySeq                      5I 0 Const
+027600190920     D  n_inclSender                  5I 0 Const
+027700190920     D  n_forceInd                    5I 0 Const
+027800190920     D  n_description                 5I 0 Const
+027900190920     D  n_type                        5I 0 Const
+028000190920     D  n_autoReclaim                 5I 0 Const
+028100190920     D  n_enfrcLocks                  5I 0 Const
+028200190920     D  n_msgInQ                      5I 0 Const
+028300190920     D  n_msgAlloc                    5I 0 Const
+028400190920     D  n_dqName                      5I 0 Const
+028500190920     D  n_dqLibn                      5I 0 Const
+028600190920     D  n_maxEntAlw                   5I 0 Const
+028700190920     D  n_initEnt                     5I 0 Const
+028800190920     D  n_maxEntSpec                  5I 0 Const
+028900190920     D  n_lastRclmDat                 5I 0 Const
+029000190920     D  SQLSTT                        5A
+029100190920     D  function                    517A   Varying Const
+029200190920     D  specific                    128A   Varying Const
+029300190920     D  errorMsg                     70A   Varying
+029400190920     D  callType                     10I 0 Const
+029500190920
+029600190920     D data            DS                  Static LikeDs(dbdqlib_dqinfo_T)
+029700190920     D dataRead        S               N   Static
+029800190920
+029900190920      /free
+030000190920       SQLSTT = '00000';
+030100190920       select;
+030200190920       when callType = udtf_call_open;
+030300190920         exsr doOpen;
+030400190920       when callType = udtf_call_fetch;
+030500190920         exsr doFetch;
+030600190920       when callType = udtf_call_close;
+030700190920         exsr doClose;
+030800190920       other;
+030900190920       endsl;
+031000190920       return;
+031100190920
+031200190920       begsr doOpen;
+031300190920       clear data;
+031400190920       if n_dtaqName = udtf_parm_null;
+031500190920         SQLSTT = '38999';
+031600190920         leavesr;
+031700190920       endif;
+031800190920       if n_dtaqLibn = udtf_parm_null;
+031900190920         SQLSTT = '38999';
+032000190920         leavesr;
+032100190920       endif;
+032200190920       data = dbdqlib_getdqinfo(i_dtaqName:i_dtaqLibn);
+032300190920       dataRead = false;
+032400190920       if data.bytesReturned = 0;
+032500190920         dataRead = true;
+032600190920       endif;
+032700190920       endsr;
+032800190920
+032900190920       begsr doFetch;
+033000190920       if dataRead;
+033100190920         SQLSTT = '02000';
+033200190920         leavesr;
+033300190920       endif;
+033400190920       o_msgLength = data.msgLength;
+033500190920       o_keyLength = data.keyLength;
+033600190920       o_keySeq = data.keySequence;
+033700190920       o_inclSender = data.inclSender;
+033800190920       o_forceInd = data.forceInd;
+033900190920       o_description = data.description;
+034000190920       o_type = data.type;
+034100190920       o_autoReclaim = data.autoReclaim;
+034200190920       o_enfrcLocks = data.enfrcDQLocks;
+034300190920       o_msgInQ = data.numMsgsInQ;
+034400190920       o_msgAlloc = data.numMsgsAlloc;
+034500190920       o_dqName = data.name;
+034600190920       o_dqLibn = data.library;
+034700190920       o_maxEntAlw = data.maxEntriesAlw;
+034800190920       o_initEnt = data.initEntries;
+034900190920       if data.maxEntriesSpc = -1;
+035000190920         o_maxEntSpec = '*MAX16MB';
+035100190920       elseif data.maxEntriesSpc = -2;
+035200190920         o_maxEntSpec = '*MAX2GB';
+035300190920       else;
+035400190920         o_maxEntSpec = '';
+035500190920       endif;
+035600190920       o_lastRclmDat = data.lastReclmDate;
+035700190920       dataRead = true;
+035800190920       endsr;
 035900190920
-036000190920     P                 E
-036100190924      ****************************************************************
-036200190924      * convert string to upper
-036300190924      ****************************************************************
-036400190924     P toUpper         B
-036500190924     D toUpper         PI            10    Varying
-036600190924     D  value                        10    Varying Const
-036700190924
-036800190924     D retVal          S             10    Varying
-036900190924
-037000190924      /free
-037100190924       exec sql
-037200190924        set :retVal = ucase(:value);
-037300190924       return retVal;
-037400190924      /end-free
+036000190920       begsr doClose;
+036100190920       clear data;
+036200190920       endsr;
+036300190920
+036400190920      /end-free
+036500190920
+036600190920     P                 E
+036700190924      ****************************************************************
+036800190924      * convert string to upper
+036900190924      ****************************************************************
+037000190924     P toUpper         B
+037100190924     D toUpper         PI            10    Varying
+037200190924     D  value                        10    Varying Const
+037300190924
+037400190924     D retVal          S             10    Varying
 037500190924
-037600190924     P                 E
+037600190924      /free
+037700190924       exec sql
+037800190924        set :retVal = ucase(:value);
+037900190924       return retVal;
+038000190924      /end-free
+038100190924
+038200190924     P                 E
