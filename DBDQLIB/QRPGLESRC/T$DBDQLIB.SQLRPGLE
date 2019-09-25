@@ -40,8 +40,8 @@
 004000190919     D info            DS                  LikeDs(dbdqlib_dqinfo_T)
 004100190821
 004200140720      /free
-004300190921       info = dbdqlib_getdqinfo('TESTDQ':'JOE');
-004400190921       data = dbdqlib_readdq('TESTDQ':'JOE':0:'');
+004300190925       info = dbdqlib_getdqinfo('TEST':'IXPERTOSS');
+004400190925       data = dbdqlib_readdq('TEST':'IXPERTOSS':0:'':'');
 004500140720      /end-free
 004600190821
 004700190821     P                 E
@@ -50,10 +50,16 @@
 005000190921     D test01          PI
 005100190920
 005200190920     D data            S          32704    Varying
-005300190920
-005400190920      /free
-005500190920       exec sql
-005600190921        set :data = ixpertoss.dtaq_read('TESTDQ', 'JOE', 0, '');
-005700190920      /end-free
-005800190920
-005900190920     P                 E
+005300190925     D dqname          S             10    Varying
+005400190925     D dqlibn          S             10    Varying
+005500190920
+005600190920      /free
+005700190925       dqname = 'TEST';
+005800190925       dqlibn = 'IXPERTOSS';
+005900190925       exec sql
+006000190925        set :data = ixpertoss.dtaq_send(:dqname, :dqlibn, 'Unkeyed entry', '');
+006100190920       exec sql
+006200190925        set :data = ixpertoss.dtaq_read(:dqname, :dqlibn, 0, '', '');
+006300190920      /end-free
+006400190920
+006500190920     P                 E
